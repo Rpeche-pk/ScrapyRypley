@@ -11,9 +11,9 @@ from ScrapyRipleyLaptop import LaptopGamer
 
 
 class Tecnologia(Item):
-    titulo=Field()
-    #precioNormal=Field()
-    #precioDescuento=Field()
+    Marca=Field()
+    precioNormal=Field()
+    precioDescuento=Field()
 
 
 
@@ -29,14 +29,16 @@ class LaptopGamer(CrawlSpider):
 
 
     user = raw_input("""Escriba una Opcion a realizar su consulta:
-    monitores gamer
-    componentes
-    audifonos gamer
-    teclado y mouse
-    camaras web
-    sillas gamer
+    ********************
+    * monitores gamer  *
+    * componentes      *
+    * audifonos gamer  *   
+    * teclado y mouse  *
+    * camaras web      *
+    * sillas gamer     *
+    ********************    
     """)
-    resultado = user.replace(' ', '-')
+    resultado = user.replace(' ', '-').lower()
 
     start_urls=[f"https://simple.ripley.com.pe/tecnologia/computacion-gamer/{resultado}?source=menu"]
     download_delay=2
@@ -58,12 +60,14 @@ class LaptopGamer(CrawlSpider):
 
             tamano=len(productos)
             item= ItemLoader(Tecnologia(), producto)
-            item.add_xpath('titulo',".//div[@class='catalog-product-details']/div[2]/text()")
+            item.add_xpath('Marca',".//div[@class='catalog-product-details']/div[2]/text()")
+            item.add_xpath('precioNormal', ".//ul[@class='catalog-prices__list']/li[@title='Precio Normal']/text()")
+            item.add_xpath('precioDescuento', ".//ul[@class='catalog-prices__list']/li[@title='Precio Internet']/text()")
             init+=1
-            print("EXTAYENDO INFORMACION" +" "+str(init)+ " de " + str(tamano))
+            print("EXTAYENDO INFORMACION" +" "+str(init)+ " de " + str(tamano)+'\n')
             if init == tamano:
                 print("---------------------SE EXTRAJO LA INFORMACION CORRECTAMENTE :)---------------------------")
-                print("---------------------SE EXTRAJO LA INFORMACION CORRECTAMENTE :)---------------------------")
+                print("---------------------SE EXTRAJO LA INFORMACION CORRECTAMENTE :)---------------------------\n")
             yield item.load_item()
 
     #print(f"--------------EXTRACCION TERMINADA: {resultado}----------------- ")
