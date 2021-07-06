@@ -14,8 +14,7 @@ class Tecnologia(Item):
     Marca=Field()
     precioNormal=Field()
     precioDescuento=Field()
-
-
+    Descripcion=Field()
 
 
 class LaptopGamer(CrawlSpider):
@@ -31,11 +30,10 @@ class LaptopGamer(CrawlSpider):
     user = raw_input("""Escriba una Opcion a realizar su consulta:
     ********************
     * monitores gamer  *
-    * componentes      *
     * audifonos gamer  *   
     * teclado y mouse  *
-    * camaras web      *
-    * sillas gamer     *
+    * sillas gamer     * 
+    * conectividad     *
     ********************    
     """)
     resultado = user.replace(' ', '-').lower()
@@ -49,28 +47,32 @@ class LaptopGamer(CrawlSpider):
                 allow=r'page=\d'
             ), follow=True, callback='parse_items'
         ),
+        #entra a la paginacion y obtiene la descripcion
+        #Rule(
+         #   LinkExtractor(
+          #      allow=r'-\d+'
+           # ), follow=True, callback='parse_details'
+       # ),
+
     )
 
-
     def parse_items(self, response):
-        sel=Selector(response)
-        productos=sel.xpath("//div[@class='row']//div[@class='catalog-product-item catalog-product-item__container col-xs-6 col-sm-6 col-md-4 col-lg-4']")
+        sel = Selector(response)
+        productos = sel.xpath("//div[@class='row']//div[@class='catalog-product-item catalog-product-item__container col-xs-6 col-sm-6 col-md-4 col-lg-4']")
         init = 0
         for producto in productos:
 
-            tamano=len(productos)
-            item= ItemLoader(Tecnologia(), producto)
-            item.add_xpath('Marca',".//div[@class='catalog-product-details']/div[2]/text()")
+            tamano = len(productos)
+            item = ItemLoader(Tecnologia(), producto)
+            item.add_xpath('Marca', ".//div[@class='catalog-product-details']/div[2]/text()")
             item.add_xpath('precioNormal', ".//ul[@class='catalog-prices__list']/li[@title='Precio Normal']/text()")
             item.add_xpath('precioDescuento', ".//ul[@class='catalog-prices__list']/li[@title='Precio Internet']/text()")
-            init+=1
-            print("EXTAYENDO INFORMACION" +" "+str(init)+ " de " + str(tamano)+'\n')
+
+            init += 1
+            print("EXTRAYENDO INFORMACION" + " " + str(init) + " de " + str(tamano) + '\n')
             if init == tamano:
                 print("---------------------SE EXTRAJO LA INFORMACION CORRECTAMENTE :)---------------------------")
                 print("---------------------SE EXTRAJO LA INFORMACION CORRECTAMENTE :)---------------------------\n")
             yield item.load_item()
-
-    #print(f"--------------EXTRACCION TERMINADA: {resultado}----------------- ")
-
 
 
